@@ -37,6 +37,14 @@ public class PokemonService {
 		return maybePokemon;
 	}
 	
+	public List<Pokemon> findByType(String type) {
+		return this.pokemonRepository.findByType(type);
+	}
+	
+	public List<Pokemon> findByHpGreaterThan(Integer hp) {
+		return this.pokemonRepository.findByHpGreaterThan(hp);
+	}
+	
 //	UPDATE SERVICE
 	public Optional<Pokemon> updateById(Long id, UpdatePokemonDTO data) {
 		Optional<Pokemon> maybePokemon = this.findById(id);
