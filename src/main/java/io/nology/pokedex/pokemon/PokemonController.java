@@ -1,6 +1,7 @@
 package io.nology.pokedex.pokemon;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,19 +36,50 @@ public class PokemonController {
 	
 	
 //	READ
+//	@GetMapping
+//	public ResponseEntity<List<Pokemon>> getAll(@RequestParam(required = false) String type , Integer minHp) {
+//		if  (type != null) {
+//			List<Pokemon> allPokemon = this.pokemonService.findByType(type);
+//			if(allPokemon.isEmpty()) {
+//				throw new NotFoundException(String.format("Pokemon with type: %s not found, are you sure it is the correct type?", type));
+//			}
+//			return new ResponseEntity<>(allPokemon, HttpStatus.OK);			
+//		} else if (minHp != null){
+//			List<Pokemon> allPokemon = this.pokemonService.findByHpGreaterThan(minHp);
+//			if(allPokemon.isEmpty()) {
+//				throw new NotFoundException(String.format("Pokemon with hp less than: %s not found.", minHp));
+//			}
+//			return new ResponseEntity<>(allPokemon, HttpStatus.OK);		
+//		} else if (type == null && minHp == null) {
+//			List<Pokemon> allPokemon = this.pokemonService.findAll();
+//			return new ResponseEntity<>(allPokemon, HttpStatus.OK);		
+//		} else {
+//			throw new NotFoundException(String.format("Invalid Parameter"));
+//		}
+//	}
+	
 	@GetMapping
-	public ResponseEntity<List<Pokemon>> getAll(@RequestParam(required = false) String type , Integer minHp) {
-		if  (type != null) {
+	public ResponseEntity<List<Pokemon>> getAll(@RequestParam(required = false) Map<String, String> allParams) {
+		if  (allParams.containsKey("type")) {
+			String type = allParams.get("type");
 			List<Pokemon> allPokemon = this.pokemonService.findByType(type);
-			System.out.println("Not Null Punya " + type);
+			if(allPokemon.isEmpty()) {
+				throw new NotFoundException(String.format("Pokemon with type: %s not found, are you sure it is the correct type?", type));
+			}
 			return new ResponseEntity<>(allPokemon, HttpStatus.OK);			
-		} else if (minHp != null){
+		} else if (allParams.containsKey("minHp")){
+			String StringMinHp = allParams.get("minHp");
+			Integer minHp = Integer.parseInt(StringMinHp);
 			List<Pokemon> allPokemon = this.pokemonService.findByHpGreaterThan(minHp);
+			if(allPokemon.isEmpty()) {
+				throw new NotFoundException(String.format("Pokemon with hp less than: %s not found.", minHp));
+			}
+			return new ResponseEntity<>(allPokemon, HttpStatus.OK);		
+		} else if (allParams.isEmpty()) {
+			List<Pokemon> allPokemon = this.pokemonService.findAll();
 			return new ResponseEntity<>(allPokemon, HttpStatus.OK);		
 		} else {
-			List<Pokemon> allPokemon = this.pokemonService.findAll();
-			System.out.println("Find all punya " + type);
-			return new ResponseEntity<>(allPokemon, HttpStatus.OK);		
+			throw new NotFoundException(String.format("Invalid Parameter"));
 		}
 	}
 	
